@@ -57,6 +57,7 @@ async function elect(options) {
       `${chalk.dim('Review Stats:')}\n` +
       `  Last reviewed: ${result.stats.daysSinceLastReview === Infinity ? 'Never' : result.stats.daysSinceLastReview + ' days ago'}\n` +
       `  Total reviews: ${result.stats.totalReviews} (avg: ${selector.getAverageReviews().toFixed(1)})\n` +
+      `  Approvals: ${result.stats.totalApprovals || 0} (avg: ${selector.getAverageApprovals().toFixed(1)})\n` +
       `  Pending reviews: ${result.stats.pendingReviews}`,
       {
         padding: 1,

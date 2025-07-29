@@ -27,11 +27,12 @@ async function stats(options) {
       head: [
         chalk.bold('Reviewer'),
         chalk.bold('Reviews'),
+        chalk.bold('Approvals'),
         chalk.bold('Pending'),
         chalk.bold('Last Review'),
         chalk.bold('Avg/Week')
       ],
-      colWidths: [20, 10, 10, 15, 12],
+      colWidths: [20, 10, 10, 10, 15, 12],
       style: {
         head: ['cyan']
       }
@@ -57,6 +58,7 @@ async function stats(options) {
       table.push([
         '@' + reviewer,
         stats.totalReviews,
+        stats.totalApprovals || 0,
         chalk[pendingColor](stats.pendingReviews),
         lastReview,
         reviewsPerWeek

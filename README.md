@@ -127,9 +127,10 @@ excluded:
 
 # Scoring weights
 weights:
-  recency: 3      # Days since last review
-  balance: 2      # Review count balance
-  workload: 1     # Current pending reviews
+  recency: 1      # Days since last review (comment/changes requested)
+  balance: 1      # PR approval count balance across team
+  approvals: 5    # Days since last approval (primary factor)
+  workload: 1     # Current pending reviews penalty
 
 # Review history window (days)
 historyDays: 30
@@ -146,13 +147,14 @@ unavailable:
 
 ## Scoring Algorithm
 
-The tool uses a weighted scoring system to select reviewers:
+The tool uses a weighted scoring system to select reviewers, prioritizing approval activity over general review activity:
 
-1. **Recency** (highest weight): Prefers reviewers who haven't reviewed in the longest time
-2. **Balance**: Distributes reviews evenly across the team
-3. **Workload**: Deprioritizes reviewers with many pending reviews
+1. **Approval Recency** (default weight: 5): Primary factor - prefers reviewers who haven't approved a PR in the longest time
+2. **Review Recency** (default weight: 1): Secondary factor - considers days since any review activity (comments, changes requested)  
+3. **Approval Balance** (default weight: 1): Distributes PR approvals evenly across the team
+4. **Workload** (default weight: 1): Deprioritizes reviewers with many pending reviews
 
-Score = (Days Since Last Review × Recency Weight) + (Average Reviews - Reviewer Count × Balance Weight) - (Pending Reviews × Workload Weight)
+The scoring system heavily prioritizes getting approvals from team members who haven't approved recently, while still considering general review activity. This ensures that team members who tend to comment without approving don't monopolize the review queue.
 
 ## Development
 

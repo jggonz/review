@@ -87,6 +87,13 @@ async function init(options) {
         },
         {
           type: 'number',
+          name: 'approvals',
+          message: 'Weight for approval count balance (prioritizes active approvers):',
+          default: weights.approvals || 3,
+          validate: (input) => input >= 0 || 'Weight must be non-negative'
+        },
+        {
+          type: 'number',
           name: 'workload',
           message: 'Weight for current workload (pending reviews):',
           default: weights.workload,
@@ -114,7 +121,7 @@ async function init(options) {
       console.log(chalk.dim(`  • ${allTeamMembers.length} team members`));
       console.log(chalk.dim(`  • ${answers.historyDays} days of history`));
       console.log(chalk.dim(`  • Max ${answers.maxPendingReviews} pending reviews`));
-      console.log(chalk.dim(`  • Weights: recency=${weights.recency}, balance=${weights.balance}, workload=${weights.workload}`));
+      console.log(chalk.dim(`  • Weights: recency=${weights.recency}, balance=${weights.balance}, approvals=${weights.approvals}, workload=${weights.workload}`));
       
       console.log(chalk.cyan('\n🎉 You\'re all set! Try these commands:'));
       console.log(chalk.cyan('  review next      - See who\'s next in the queue'));

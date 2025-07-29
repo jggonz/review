@@ -34,7 +34,7 @@ async function next(options) {
         
         return `${emoji} ${chalk.green('@' + item.reviewer)} ${chalk.dim(`(score: ${item.score.toFixed(1)})`)}
    ${chalk.gray(lastReview)}
-   ${chalk.gray(`${item.stats.totalReviews} reviews | ${item.stats.pendingReviews} pending`)}`;
+   ${chalk.gray(`${item.stats.totalReviews} reviews (${item.stats.totalApprovals || 0} approvals) | ${item.stats.pendingReviews} pending`)}`;
       }).join('\n\n'),
       {
         padding: 1,
@@ -49,6 +49,9 @@ async function next(options) {
       const top = queue[0];
       console.log(chalk.dim(`  Recency bonus: +${top.breakdown.recency.toFixed(1)}`));
       console.log(chalk.dim(`  Balance bonus: ${top.breakdown.balance > 0 ? '+' : ''}${top.breakdown.balance.toFixed(1)}`));
+      if (top.breakdown.approvals !== 0) {
+        console.log(chalk.dim(`  Approval balance: ${top.breakdown.approvals > 0 ? '+' : ''}${top.breakdown.approvals.toFixed(1)}`));
+      }
       console.log(chalk.dim(`  Workload penalty: ${top.breakdown.workload.toFixed(1)}`));
     }
     

@@ -41,9 +41,10 @@ class Config {
       team: [],
       excluded: ['dependabot[bot]', 'github-actions[bot]'],
       weights: {
-        recency: 3,
-        balance: 2,
-        workload: 1
+        recency: 1,     // Days since last review (comment/changes requested)
+        balance: 1,     // Approval count balance across team
+        approvals: 5,   // Days since last approval (primary factor)
+        workload: 1     // Current pending reviews penalty
       },
       unavailable: {},
       minReviewsBeforeReset: 5,
