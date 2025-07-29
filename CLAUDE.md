@@ -38,7 +38,7 @@ This is a CLI tool called "review" that automatically selects the next code revi
 
 ### Selection Algorithm
 The `ReviewerSelector` class uses a simple algorithm focused on approval rotation:
-- Analyzes the last N PRs (default: 10) for approval patterns
+- Analyzes the last N PRs (default: 30) for approval patterns
 - Prioritizes reviewers with fewer recent approvals
 - Breaks ties by who approved longest ago
 - Applies workload penalties for pending reviews
@@ -47,7 +47,7 @@ The `ReviewerSelector` class uses a simple algorithm focused on approval rotatio
 `.pr-reviewer.yml` contains:
 - `team` - Array of eligible reviewers
 - `excluded` - Bot accounts to ignore
-- `lookbackPRs` - Number of recent PRs to analyze (default: 10)
+- `lookbackPRs` - Number of recent PRs to analyze (default: 30)
 - `maxPendingReviews` - Workload threshold (default: 3)
 - `unavailable` - Temporary unavailability records
 

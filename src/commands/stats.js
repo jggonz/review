@@ -38,7 +38,7 @@ async function stats(options) {
     });
     
     const cfg = config.get();
-    const lookbackPRs = cfg.lookbackPRs || 10;
+    const lookbackPRs = cfg.lookbackPRs || 30;
     
     const sortedReviewers = Object.entries(reviewStats)
       .filter(([reviewer]) => !reviewer.includes('[bot]'))

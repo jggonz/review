@@ -25,7 +25,7 @@ async function next(options) {
     spinner.succeed('Review queue analyzed');
     
     const cfg = config.get();
-    const lookbackPRs = cfg.lookbackPRs || 10;
+    const lookbackPRs = cfg.lookbackPRs || 30;
     
     console.log(boxen(
       chalk.bold('📊 Next Reviewers in Queue\n\n') +

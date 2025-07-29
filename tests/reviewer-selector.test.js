@@ -5,7 +5,7 @@ jest.mock('../src/lib/config', () => ({
   get: () => ({
     team: ['alice', 'bob', 'charlie', 'david'],
     excluded: ['dependabot[bot]'],
-    lookbackPRs: 10,
+    lookbackPRs: 30,
     maxPendingReviews: 3
   }),
   isUnavailable: () => false
@@ -112,7 +112,7 @@ describe('ReviewerSelector', () => {
       originalConfig.get = jest.fn(() => ({
         team: [],
         excluded: [],
-        lookbackPRs: 10,
+        lookbackPRs: 30,
         maxPendingReviews: 3
       }));
 
