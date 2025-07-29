@@ -125,18 +125,10 @@ excluded:
   - dependabot[bot]
   - github-actions[bot]
 
-# Scoring weights
-weights:
-  recency: 1      # Days since last review (comment/changes requested)
-  balance: 1      # PR approval count balance across team
-  approvals: 5    # Days since last approval (primary factor)
-  workload: 1     # Current pending reviews penalty
+# Configuration settings
+lookbackPRs: 10         # Number of recent PRs to analyze for approval patterns
+maxPendingReviews: 3    # Max pending reviews before reviewer is deprioritized
 
-# Review history window (days)
-historyDays: 30
-
-# Maximum pending reviews before deprioritizing
-maxPendingReviews: 3
 
 # Unavailable team members
 unavailable:
@@ -145,16 +137,16 @@ unavailable:
     until: "2024-01-20T10:00:00Z"
 ```
 
-## Scoring Algorithm
+## Selection Algorithm
 
-The tool uses a weighted scoring system to select reviewers, prioritizing approval activity over general review activity:
+The tool uses a simple, transparent algorithm focused on minimizing repeats and load balancing approvals:
 
-1. **Approval Recency** (default weight: 5): Primary factor - prefers reviewers who haven't approved a PR in the longest time
-2. **Review Recency** (default weight: 1): Secondary factor - considers days since any review activity (comments, changes requested)  
-3. **Approval Balance** (default weight: 1): Distributes PR approvals evenly across the team
-4. **Workload** (default weight: 1): Deprioritizes reviewers with many pending reviews
+1. **Looks at the last N PRs** (default: 10) to see who has been approving recently
+2. **Prioritizes reviewers with fewer recent approvals** - if someone hasn't approved any of the last 10 PRs, they get top priority
+3. **Breaks ties by recency** - among reviewers with the same approval count, picks who approved longest ago
+4. **Considers current workload** - adds penalty for pending reviews, heavy penalty for exceeding max pending reviews
 
-The scoring system heavily prioritizes getting approvals from team members who haven't approved recently, while still considering general review activity. This ensures that team members who tend to comment without approving don't monopolize the review queue.
+This simple approach ensures fair rotation of approvals (not just comments) and prevents the same people from always being selected while others are skipped.
 
 ## Development
 

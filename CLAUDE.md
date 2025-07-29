@@ -36,21 +36,20 @@ This is a CLI tool called "review" that automatically selects the next code revi
 - **GitHub Integration**: `src/lib/github.js` - Interfaces with GitHub CLI (`gh`)
 - **Reviewer Selection**: `src/lib/reviewer-selector.js` - Core scoring algorithm
 
-### Scoring Algorithm
-The `ReviewerSelector` class uses weighted scoring prioritizing approvals over reviews:
-- **Approval Recency** (weight: 5) - Days since last approval (primary factor)
-- **Review Recency** (weight: 1) - Days since any review activity
-- **Approval Balance** (weight: 1) - PR approval count distribution across team
-- **Workload** (weight: 1) - Current pending reviews penalty
+### Selection Algorithm
+The `ReviewerSelector` class uses a simple algorithm focused on approval rotation:
+- Analyzes the last N PRs (default: 10) for approval patterns
+- Prioritizes reviewers with fewer recent approvals
+- Breaks ties by who approved longest ago
+- Applies workload penalties for pending reviews
 
 ### Configuration File Structure
 `.pr-reviewer.yml` contains:
 - `team` - Array of eligible reviewers
 - `excluded` - Bot accounts to ignore
-- `weights` - Scoring weight configuration
-- `unavailable` - Temporary unavailability records
-- `historyDays` - Review history window (default: 30)
+- `lookbackPRs` - Number of recent PRs to analyze (default: 10)
 - `maxPendingReviews` - Workload threshold (default: 3)
+- `unavailable` - Temporary unavailability records
 
 ### Key Dependencies
 - `commander` - CLI framework
