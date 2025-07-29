@@ -33,7 +33,7 @@ async function elect(options) {
     
     spinner.text = 'Analyzing review history...';
     
-    const prHistory = github.getPRHistory(config.get('historyDays') || 30);
+    const prHistory = github.getPRHistory(30); // Get enough history to analyze patterns
     const openPRs = github.getOpenPRs();
     
     const selector = new ReviewerSelector(prHistory, openPRs);
@@ -50,15 +50,24 @@ async function elect(options) {
     
     spinner.succeed('Analysis complete');
     
+    const cfg = config.get();
+    const lookbackPRs = cfg.lookbackPRs || 10;
+    const lastApprovalIndex = result.stats.lastApprovalIndex;
+    const approvalStatus = lastApprovalIndex >= lookbackPRs 
+      ? 'No recent approvals' 
+      : lastApprovalIndex === 0
+        ? 'Approved most recent PR'
+        : `Last approval: ${lastApprovalIndex + 1} PRs ago`;
+    
     console.log(boxen(
       `${chalk.bold('Selected Reviewer:')} ${chalk.green('@' + result.reviewer)}\n\n` +
       `${chalk.bold('PR:')} #${pr.number} - ${pr.title}\n` +
       `${chalk.bold('Author:')} @${pr.author.login}\n\n` +
       `${chalk.dim('Review Stats:')}\n` +
-      `  Last reviewed: ${result.stats.daysSinceLastReview === Infinity ? 'Never' : result.stats.daysSinceLastReview + ' days ago'}\n` +
-      `  Total reviews: ${result.stats.totalReviews} (avg: ${selector.getAverageReviews().toFixed(1)})\n` +
-      `  Approvals: ${result.stats.totalApprovals || 0} (avg: ${selector.getAverageApprovals().toFixed(1)})\n` +
-      `  Pending reviews: ${result.stats.pendingReviews}`,
+      `  Recent approvals: ${result.stats.recentApprovals}/${lookbackPRs} PRs\n` +
+      `  Approval status: ${approvalStatus}\n` +
+      `  Pending reviews: ${result.stats.pendingReviews}\n` +
+      `  Selection score: ${result.score}`,
       {
         padding: 1,
         margin: 1,

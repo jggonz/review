@@ -19,59 +19,67 @@ async function stats(options) {
     }
     
     const selector = new ReviewerSelector(prHistory, openPRs);
-    const reviewStats = selector.reviewStats;
+    const reviewStats = selector.calculateReviewStats();
     
     spinner.succeed(`Review statistics for the last ${days} days`);
     
     const table = new Table({
       head: [
         chalk.bold('Reviewer'),
-        chalk.bold('Reviews'),
-        chalk.bold('Approvals'),
+        chalk.bold('Recent Approvals'),
         chalk.bold('Pending'),
-        chalk.bold('Last Review'),
-        chalk.bold('Avg/Week')
+        chalk.bold('Last Approval'),
+        chalk.bold('Status')
       ],
-      colWidths: [20, 10, 10, 10, 15, 12],
+      colWidths: [20, 18, 10, 15, 15],
       style: {
         head: ['cyan']
       }
     });
     
+    const cfg = config.get();
+    const lookbackPRs = cfg.lookbackPRs || 10;
+    
     const sortedReviewers = Object.entries(reviewStats)
       .filter(([reviewer]) => !reviewer.includes('[bot]'))
-      .sort((a, b) => b[1].totalReviews - a[1].totalReviews);
+      .sort((a, b) => a[1].recentApprovals - b[1].recentApprovals); // Sort by fewest approvals first
     
-    const totalReviews = sortedReviewers.reduce((sum, [, stats]) => sum + stats.totalReviews, 0);
-    const avgReviews = totalReviews / sortedReviewers.length || 0;
+    const totalApprovals = sortedReviewers.reduce((sum, [, stats]) => sum + stats.recentApprovals, 0);
     
     sortedReviewers.forEach(([reviewer, stats]) => {
-      const reviewsPerWeek = (stats.totalReviews / (days / 7)).toFixed(1);
-      const lastReview = stats.daysSinceLastReview === Infinity 
+      const lastApproval = !stats.lastApprovalDate
         ? chalk.gray('Never') 
-        : stats.daysSinceLastReview === 0 
+        : new Date().toDateString() === stats.lastApprovalDate.toDateString()
           ? chalk.green('Today')
-          : chalk.yellow(`${stats.daysSinceLastReview}d ago`);
+          : chalk.yellow(`${Math.floor((new Date() - stats.lastApprovalDate) / (1000 * 60 * 60 * 24))}d ago`);
       
       const pendingColor = stats.pendingReviews > 2 ? 'red' : stats.pendingReviews > 0 ? 'yellow' : 'gray';
       
+      let status = chalk.green('Available');
+      if (config.isUnavailable(reviewer)) {
+        status = chalk.red('Unavailable');
+      } else if (stats.pendingReviews >= (cfg.maxPendingReviews || 3)) {
+        status = chalk.red('Overloaded');
+      } else if (stats.recentApprovals === 0) {
+        status = chalk.cyan('Next up');
+      }
+      
       table.push([
         '@' + reviewer,
-        stats.totalReviews,
-        stats.totalApprovals || 0,
+        `${stats.recentApprovals}/${lookbackPRs} PRs`,
         chalk[pendingColor](stats.pendingReviews),
-        lastReview,
-        reviewsPerWeek
+        lastApproval,
+        status
       ]);
     });
     
     console.log('\n' + table.toString());
     
     console.log(chalk.dim('\n📊 Summary:'));
-    console.log(chalk.dim(`   Total reviews: ${totalReviews}`));
-    console.log(chalk.dim(`   Active reviewers: ${sortedReviewers.length}`));
-    console.log(chalk.dim(`   Average reviews per person: ${avgReviews.toFixed(1)}`));
-    console.log(chalk.dim(`   PRs analyzed: ${prHistory.length}`));
+    console.log(chalk.dim(`   Total approvals in last ${lookbackPRs} PRs: ${totalApprovals}`));
+    console.log(chalk.dim(`   Team members: ${sortedReviewers.length}`));
+    console.log(chalk.dim(`   Average approvals per person: ${(totalApprovals / sortedReviewers.length || 0).toFixed(1)}`));
+    console.log(chalk.dim(`   PRs analyzed: ${Math.min(prHistory.length, lookbackPRs)}`));
     
     const unavailable = Object.entries(config.get('unavailable') || {})
       .filter(([, data]) => !data.until || new Date(data.until) > new Date());

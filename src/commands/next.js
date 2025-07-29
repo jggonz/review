@@ -10,7 +10,7 @@ async function next(options) {
   
   try {
     const count = parseInt(options.count) || 3;
-    const prHistory = github.getPRHistory(config.get('historyDays') || 30);
+    const prHistory = github.getPRHistory(30); // Get enough history to analyze patterns
     const openPRs = github.getOpenPRs();
     
     const selector = new ReviewerSelector(prHistory, openPRs);
@@ -24,17 +24,23 @@ async function next(options) {
     
     spinner.succeed('Review queue analyzed');
     
+    const cfg = config.get();
+    const lookbackPRs = cfg.lookbackPRs || 10;
+    
     console.log(boxen(
       chalk.bold('📊 Next Reviewers in Queue\n\n') +
       queue.map((item, index) => {
         const emoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-        const lastReview = item.stats.daysSinceLastReview === Infinity 
-          ? 'Never reviewed' 
-          : `Last reviewed ${item.stats.daysSinceLastReview} days ago`;
+        const lastApprovalIndex = item.stats.lastApprovalIndex;
+        const approvalStatus = lastApprovalIndex >= lookbackPRs 
+          ? chalk.red('No recent approvals') 
+          : lastApprovalIndex === 0
+            ? chalk.green('Approved most recent PR')
+            : chalk.yellow(`Last approval: ${lastApprovalIndex + 1} PRs ago`);
         
-        return `${emoji} ${chalk.green('@' + item.reviewer)} ${chalk.dim(`(score: ${item.score.toFixed(1)})`)}
-   ${chalk.gray(lastReview)}
-   ${chalk.gray(`${item.stats.totalReviews} reviews (${item.stats.totalApprovals || 0} approvals) | ${item.stats.pendingReviews} pending`)}`;
+        return `${emoji} ${chalk.green('@' + item.reviewer)} ${chalk.dim(`(score: ${item.score})`)}
+   ${chalk.gray(approvalStatus)}
+   ${chalk.gray(`${item.stats.recentApprovals}/${lookbackPRs} recent approvals | ${item.stats.pendingReviews} pending`)}`;
       }).join('\n\n'),
       {
         padding: 1,
@@ -45,14 +51,11 @@ async function next(options) {
     ));
     
     if (options.verbose) {
-      console.log(chalk.dim('\nScore breakdown for top reviewer:'));
-      const top = queue[0];
-      console.log(chalk.dim(`  Recency bonus: +${top.breakdown.recency.toFixed(1)}`));
-      console.log(chalk.dim(`  Balance bonus: ${top.breakdown.balance > 0 ? '+' : ''}${top.breakdown.balance.toFixed(1)}`));
-      if (top.breakdown.approvals !== 0) {
-        console.log(chalk.dim(`  Approval balance: ${top.breakdown.approvals > 0 ? '+' : ''}${top.breakdown.approvals.toFixed(1)}`));
-      }
-      console.log(chalk.dim(`  Workload penalty: ${top.breakdown.workload.toFixed(1)}`));
+      console.log(chalk.dim('\nSimple scoring logic:'));
+      console.log(chalk.dim('• Reviewers with fewer recent approvals get priority'));
+      console.log(chalk.dim('• Ties broken by who approved longest ago'));
+      console.log(chalk.dim('• Heavy penalty for exceeding max pending reviews'));
+      console.log(chalk.dim(`• Analysis window: last ${lookbackPRs} PRs`));
     }
     
   } catch (error) {
