@@ -126,7 +126,7 @@ excluded:
   - github-actions[bot]
 
 # Configuration settings
-lookbackPRs: 10         # Number of recent PRs to analyze for approval patterns
+lookbackPRs: 30         # Number of recent PRs to analyze for approval patterns
 maxPendingReviews: 3    # Max pending reviews before reviewer is deprioritized
 
 
@@ -141,8 +141,8 @@ unavailable:
 
 The tool uses a simple, transparent algorithm focused on minimizing repeats and load balancing approvals:
 
-1. **Looks at the last N PRs** (default: 10) to see who has been approving recently
-2. **Prioritizes reviewers with fewer recent approvals** - if someone hasn't approved any of the last 10 PRs, they get top priority
+1. **Looks at the last N PRs** (default: 30) to see who has been approving recently
+2. **Prioritizes reviewers with fewer recent approvals** - if someone hasn't approved any of the last 30 PRs, they get top priority
 3. **Breaks ties by recency** - among reviewers with the same approval count, picks who approved longest ago
 4. **Considers current workload** - adds penalty for pending reviews, heavy penalty for exceeding max pending reviews
 

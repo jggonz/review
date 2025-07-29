@@ -51,7 +51,7 @@ async function elect(options) {
     spinner.succeed('Analysis complete');
     
     const cfg = config.get();
-    const lookbackPRs = cfg.lookbackPRs || 10;
+    const lookbackPRs = cfg.lookbackPRs || 30;
     const lastApprovalIndex = result.stats.lastApprovalIndex;
     const approvalStatus = lastApprovalIndex >= lookbackPRs 
       ? 'No recent approvals' 

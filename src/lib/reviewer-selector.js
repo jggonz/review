@@ -9,7 +9,7 @@ class ReviewerSelector {
   // Get the last N PRs and track who approved them
   getRecentApprovals() {
     const cfg = config.get();
-    const lookbackPRs = cfg.lookbackPRs || 10;
+    const lookbackPRs = cfg.lookbackPRs || 30;
     
     // Sort PRs by most recent first, then take the last N
     const recentPRs = this.prHistory

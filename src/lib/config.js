@@ -40,7 +40,7 @@ class Config {
     return {
       team: [],
       excluded: ['dependabot[bot]', 'github-actions[bot]'],
-      lookbackPRs: 10,        // Number of recent PRs to analyze for approval patterns
+      lookbackPRs: 30,        // Number of recent PRs to analyze for approval patterns
       maxPendingReviews: 3,   // Max pending reviews before reviewer is deprioritized
       unavailable: {}
     };
