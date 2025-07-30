@@ -7,13 +7,15 @@ const { stats } = require('./commands/stats');
 const { next } = require('./commands/next');
 const { unavailable } = require('./commands/unavailable');
 const { init } = require('./commands/init');
+const { version } = require('./commands/version');
+const packageJson = require('../package.json');
 
 const program = new Command();
 
 program
   .name('review')
   .description('PR reviewer election tool for fair code review rotation')
-  .version('1.0.0');
+  .version(packageJson.version);
 
 program
   .command('elect')
@@ -47,5 +49,10 @@ program
   .description('Initialize review configuration')
   .option('-f, --force', 'Overwrite existing configuration')
   .action(init);
+
+program
+  .command('version')
+  .description('Show version information')
+  .action(version);
 
 program.parse();
