@@ -116,10 +116,19 @@ class ReviewerSelector {
     
     // Sort by score (lowest first), then by last approval index (higher = longer ago)
     scoredReviewers.sort((a, b) => {
+      // First priority: users with 0 pending reviews
+      const aPending = a.stats.pendingReviews;
+      const bPending = b.stats.pendingReviews;
+      
+      if (aPending === 0 && bPending > 0) return -1;
+      if (bPending === 0 && aPending > 0) return 1;
+      
+      // Second priority: score comparison
       if (a.score !== b.score) {
         return a.score - b.score;
       }
-      // If scores are equal, prioritize who approved longest ago
+      
+      // Third priority: who approved longest ago
       return b.stats.lastApprovalIndex - a.stats.lastApprovalIndex;
     });
     
