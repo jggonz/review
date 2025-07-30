@@ -9,7 +9,7 @@ async function next(options) {
   const spinner = ora('Analyzing review queue...').start();
   
   try {
-    const count = parseInt(options.count) || 3;
+    const count = parseInt(options.count) || 10;
     const prHistory = github.getPRHistory(30); // Get enough history to analyze patterns
     const openPRs = github.getOpenPRs();
     

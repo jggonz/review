@@ -31,7 +31,7 @@ program
 program
   .command('next')
   .description('Show who\'s next in line for review (dry run)')
-  .option('-n, --count <number>', 'Number of reviewers to show', '3')
+  .option('-n, --count <number>', 'Number of reviewers to show', '10')
   .option('-v, --verbose', 'Show detailed score breakdown')
   .action(next);
 
