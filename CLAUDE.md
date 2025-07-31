@@ -58,3 +58,7 @@ The `ReviewerSelector` class uses a simple algorithm focused on approval rotatio
 - `cli-table3` - Table formatting
 - `inquirer` - Interactive prompts
 - `date-fns` - Date calculations
+
+## Development Workflow
+- Do not merge directly to main, always create a new branch and push to a PR when pushing to github
+- Bump the version number whenever creating a PR
