@@ -10,18 +10,24 @@
     "test": "jest",
     "start": "node src/cli.js"
   },
-  "keywords": ["github", "pr", "review", "cli"],
+  "keywords": [
+    "github",
+    "pr",
+    "review",
+    "cli"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "commander": "^9.4.1",
-    "js-yaml": "^4.1.0",
-    "cli-table3": "^0.6.3",
     "boxen": "^5.1.2",
-    "ora": "^5.4.1",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^9.4.1",
     "date-fns": "^2.29.3",
-    "inquirer": "^8.2.5"
+    "inquirer": "^8.2.5",
+    "js-yaml": "^4.1.0",
+    "open": "^10.2.0",
+    "ora": "^5.4.1"
   },
   "devDependencies": {
     "jest": "^29.3.1"
