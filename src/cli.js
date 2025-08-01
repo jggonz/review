@@ -8,13 +8,15 @@ const { next } = require('./commands/next');
 const { unavailable } = require('./commands/unavailable');
 const { init } = require('./commands/init');
 const mine = require('./commands/mine');
+const { version } = require('./commands/version');
+const packageJson = require('../package.json');
 
 const program = new Command();
 
 program
   .name('review')
   .description('PR reviewer election tool for fair code review rotation')
-  .version('1.0.0');
+  .version(packageJson.version);
 
 program
   .command('elect')
@@ -53,5 +55,10 @@ program
   .command('mine')
   .description('Show your open PRs in an interactive list')
   .action(mine);
+
+program
+  .command('version')
+  .description('Show version information')
+  .action(version);
 
 program.parse();
