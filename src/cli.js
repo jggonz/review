@@ -7,6 +7,7 @@ const { stats } = require('./commands/stats');
 const { next } = require('./commands/next');
 const { unavailable } = require('./commands/unavailable');
 const { init } = require('./commands/init');
+const mine = require('./commands/mine');
 
 const program = new Command();
 
@@ -47,5 +48,10 @@ program
   .description('Initialize review configuration')
   .option('-f, --force', 'Overwrite existing configuration')
   .action(init);
+
+program
+  .command('mine')
+  .description('Show your open PRs in an interactive list')
+  .action(mine);
 
 program.parse();

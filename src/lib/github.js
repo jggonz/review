@@ -138,6 +138,46 @@ class GitHubAPI {
     
     return Array.from(members).filter(m => !m.includes('[bot]'));
   }
+
+  getCurrentUser() {
+    try {
+      const output = execSync('gh api user --jq .login', { encoding: 'utf8' });
+      return output.trim();
+    } catch (error) {
+      console.error(chalk.red('Error fetching current user:', error.message));
+      return null;
+    }
+  }
+
+  getUserPRs(username) {
+    try {
+      const output = execSync(
+        `gh pr list --author ${username} --state open --json number,title,url,headRepository,reviewDecision,updatedAt --limit 100`,
+        { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 }
+      );
+      
+      const prs = JSON.parse(output);
+      return prs.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    } catch (error) {
+      console.error(chalk.red('Error fetching user PRs:', error.message));
+      return [];
+    }
+  }
+
+  getPRsToReview(username) {
+    try {
+      const output = execSync(
+        `gh search prs --state=open --review-requested="${username}" --json number,title,url,repository,author,updatedAt --limit 100`,
+        { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 }
+      );
+      
+      const prs = JSON.parse(output);
+      return prs.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    } catch (error) {
+      console.error(chalk.red('Error fetching PRs to review:', error.message));
+      return [];
+    }
+  }
 }
 
 module.exports = new GitHubAPI();
