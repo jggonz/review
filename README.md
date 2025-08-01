@@ -49,11 +49,14 @@ review next
 
 ## Commands
 
-### `review init`
+### `review init [options]`
 Initialize the reviewer configuration for your repository. This command will:
 - Detect team members from recent PR history
 - Create `.pr-reviewer.yml` configuration file
 - Set up scoring weights and preferences
+
+Options:
+- `-f, --force`: Overwrite existing configuration
 
 ### `review elect [options]`
 Elect a reviewer for a pull request.
@@ -88,7 +91,8 @@ review stats --days 90
 Show who's next in line for review without making any changes.
 
 Options:
-- `-n, --count <number>`: Number of reviewers to show (default: 3)
+- `-n, --count <number>`: Number of reviewers to show (default: 10)
+- `-v, --verbose`: Show detailed score breakdown
 
 ### `review unavailable <username> [options]`
 Mark a team member as unavailable.
@@ -107,6 +111,13 @@ review unavailable bob
 # Mark someone as available again
 review unavailable alice --remove
 ```
+
+### `review version`
+Display version information about the tool, including:
+- Current version number
+- Tool description
+- Node.js version
+- Platform information
 
 ## Configuration
 
